@@ -35,7 +35,24 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 // @ts-ignore
-import Ping from 'react-native-ping';
+const ping = async (url, timeout = 4000) => {
+    const controller = new AbortController();
+    const signal = controller.signal;
+  
+    const start = Date.now();
+  
+    const timer = setTimeout(() => controller.abort(), timeout);
+  
+    try {
+      await fetch(url, { method: 'HEAD', signal });
+      clearTimeout(timer);
+      return Date.now() - start;
+    } catch {
+      clearTimeout(timer);
+      return null;
+    }
+  };
+  
 export var connectToHost = function (ipAddress, timeout) {
     if (timeout === void 0) { timeout = 4000; }
     return new Promise(function (resolve, reject) { return __awaiter(void 0, void 0, void 0, function () {
@@ -55,7 +72,7 @@ export var connectToHost = function (ipAddress, timeout) {
                      * @returns
                      * @memberof Ping
                      */
-                    return [4 /*yield*/, Ping.start(ipAddress, { timeout: timeout })];
+                    return [4 /*yield*/, ping(ipAddress, timeout)]
                 case 1:
                     /**
                      *
